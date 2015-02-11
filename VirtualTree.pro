@@ -24,4 +24,5 @@ HEADERS  += mainwindow.h \
 FORMS    += mainwindow.ui
 
 CONFIG += c++14
-QMAKE_CXXFLAGS += -std=c++11
+msvc:
+else:QMAKE_CXXFLAGS += -std=c++11

@@ -68,6 +68,7 @@ int VirtualPartAdapter::getItemsCount(void *parent)
 
 void MainWindow::on_actionAdd_group_triggered()
 {
+  // we can update data inside beginUpdate / endUpdate block
   m_adapter->beginUpdate();
   Part* cur = currentPart();
   cur = cur ? cur : &root;
@@ -84,6 +85,7 @@ void MainWindow::on_actionRemove_current_triggered()
   Part *part = currentPart();
   if (part && part != &root)
   {
+    // we can simply notify view about changes
     m_treeModel->QueuedUpdate();
     part->parent->remove(part);
   }
