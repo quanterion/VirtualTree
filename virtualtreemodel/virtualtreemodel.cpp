@@ -176,7 +176,7 @@ void VirtualTreeModel::syncNodeList(InternalNode &node, void *parent)
 }
 
 QVariant VirtualTreeModel::data(const QModelIndex &index, int role) const
-{
+{  
   if (!index.isValid())
     return QVariant();
 
@@ -318,6 +318,16 @@ void VirtualTreeModel::endUpdate()
   // force tree to repaint all nodes
   if (m_updating == 0)
     emit dataChanged(QModelIndex(), QModelIndex());
+}
+
+bool VirtualTreeModel::isUpdating()
+{
+  return m_updating > 0;
+}
+
+bool VirtualTreeModel::isSyncing()
+{
+  return m_syncing;
 }
 
 void VirtualTreeModel::QueuedUpdate()

@@ -29,6 +29,11 @@ public:
 
   void beginUpdate();
   void endUpdate();
+  // tree is updating that means items in internal nodes may be invalid
+  bool isUpdating();
+  // internal nodes are being synchronized with adapter
+  bool isSyncing();
+
   void QueuedUpdate();
 
 private:
@@ -47,7 +52,7 @@ private:
   bool m_syncing;
   void syncTree();
 
-  private slots:
+private slots:
   void doQueuedUpdate();
 };
 
