@@ -1,33 +1,33 @@
 #include "virtualtreemodel.h"
 
-class VirtualModelInterfaceImpl: public VirtualModelInterface
+class VirtualModelInterfaceImpl : public VirtualModelInterface
 {
 public:
-    VirtualModelInterfaceImpl(VirtualTreeModel &model);
-    void beginUpdate() override;
-    void endUpdate() override;
-    void QueuedUpdate() override;
+  VirtualModelInterfaceImpl(VirtualTreeModel &model);
+  void beginUpdate() override;
+  void endUpdate() override;
+  void QueuedUpdate() override;
 private:
-    VirtualTreeModel &m_model;
+  VirtualTreeModel &m_model;
 };
 
 
-VirtualModelInterfaceImpl::VirtualModelInterfaceImpl(VirtualTreeModel &model): m_model(model)
+VirtualModelInterfaceImpl::VirtualModelInterfaceImpl(VirtualTreeModel &model) : m_model(model)
 {
 
 }
 
 void VirtualModelInterfaceImpl::beginUpdate() {
-    m_model.beginUpdate();
+  m_model.beginUpdate();
 }
 
 void VirtualModelInterfaceImpl::endUpdate() {
-    m_model.endUpdate();
+  m_model.endUpdate();
 }
 
 void VirtualModelInterfaceImpl::QueuedUpdate()
 {
-    m_model.QueuedUpdate();
+  m_model.QueuedUpdate();
 }
 
 typedef std::vector<std::unique_ptr<InternalNode>> InternalChildren;
@@ -38,8 +38,8 @@ class InternalNode
 public:
   InternalNode(InternalNode *parent, void *obj, size_t index) : parent(parent), item(obj), parentIndex(index) {}
   InternalNode *parent;
-  size_t parentIndex;
   void *item;
+  size_t parentIndex;  
   InternalChildren children;
   bool hasChildrenQueryed = false;
   bool hasChildren = false;
@@ -47,33 +47,33 @@ public:
 
   bool isInitialized(VirtualModelAdapter *adapter)
   {
-      if (!childInitialized)
-      {
-          // if node children have not been added to model
-          // but model asks node by hasChildren()
-          // the only way to notify model about changes is to initialize node children
-          if (hasChildrenQueryed) {
-              if ( hasChildren != (adapter->getItemsCount(item) > 0) )
-                  childInitialized = true;
-          }
-          return childInitialized;
+    if (!childInitialized)
+    {
+      // if node children have not been added to model
+      // but model asks node by hasChildren()
+      // the only way to notify model about changes is to initialize node children
+      if (hasChildrenQueryed) {
+        if (hasChildren != (adapter->getItemsCount(item) > 0))
+          childInitialized = true;
       }
-      else
-        return true;
+      return childInitialized;
+    }
+    else
+      return true;
   }
 
   void loadChildren(VirtualModelAdapter *adapter)
   {
-      if (!childInitialized)
+    if (!childInitialized)
+    {
+      if (adapter->hasItems(item))
       {
-        if (adapter->hasItems(item))
-        {
-          int childCount = adapter->getItemsCount(item);
-          for (int k = 0; k < childCount; ++k)
-            children.emplace_back(new InternalNode(this, adapter->getItem(item, k), k));
-        }
-        childInitialized = true;
+        int childCount = adapter->getItemsCount(item);
+        for (int k = 0; k < childCount; ++k)
+          children.emplace_back(new InternalNode(this, adapter->getItem(item, k), k));
       }
+      childInitialized = true;
+    }
   }
 
   int childCount(VirtualModelAdapter *adapter)
@@ -82,7 +82,7 @@ public:
     return static_cast<int>(children.size());
   }
 
-  void eraseChildren(InternalChildren::const_iterator begin, InternalChildren::const_iterator end)
+  void eraseChildren(const InternalChildren::iterator &begin, const InternalChildren::iterator &end)
   {
     size_t curParent = begin->get()->parentIndex;
     auto newEnd = children.erase(begin, end);
@@ -98,12 +98,18 @@ public:
 };
 
 VirtualTreeModel::VirtualTreeModel(VirtualModelAdapter *adapter, QObject *parent) :
-    QAbstractItemModel(parent), m_syncing(false), m_updating(0),
-    m_root(std::make_unique<InternalNode>(nullptr, nullptr, 0)), m_adapter(adapter)
+  QAbstractItemModel(parent), m_adapter(adapter), m_updating(0), m_syncing(false)
 {
-    m_intf.reset(new VirtualModelInterfaceImpl(*this));
-    adapter->setModel(m_intf.get());
-    syncTree();
+  m_root = new InternalNode(nullptr, nullptr, 0);
+  m_intf = new VirtualModelInterfaceImpl(*this);
+  adapter->setModel(m_intf);
+  syncTree();
+}
+
+VirtualTreeModel::~VirtualTreeModel()
+{
+  delete m_root;
+  delete m_intf;
 }
 
 void VirtualTreeModel::syncNodeList(InternalNode &node, void *parent)
@@ -112,11 +118,11 @@ void VirtualTreeModel::syncNodeList(InternalNode &node, void *parent)
   int srcStart = 0;
   int srcCur = srcStart;
   int destStart = 0;
-  
+
   auto index = getIndex(node);
-  while (srcCur <= nodes.size())
+  while (srcCur <= static_cast<int>(nodes.size()))
   {
-    bool finishing = srcCur >= nodes.size();
+    bool finishing = srcCur >= static_cast<int>(nodes.size());
     int destCur = 0;
     InternalNode *curNode = nullptr;
     if (!finishing) {
@@ -127,12 +133,12 @@ void VirtualTreeModel::syncNodeList(InternalNode &node, void *parent)
     {
       // remove skipped source nodes
       if (srcCur > srcStart)
-      {                
-        beginRemoveRows(index, static_cast<int>(srcStart), static_cast<int>(srcCur) - 1);
-        node.eraseChildren(nodes.begin() + srcStart, nodes.begin() + srcCur);        
+      {
+        beginRemoveRows(index, static_cast<int>(srcStart), static_cast<int>(srcCur)-1);
+        node.eraseChildren(nodes.begin() + srcStart, nodes.begin() + srcCur);
         if (!finishing)
-          srcCur = srcStart;                  
-        endRemoveRows();        
+          srcCur = srcStart;
+        endRemoveRows();
       }
       srcStart = srcCur + 1;
 
@@ -148,7 +154,7 @@ void VirtualTreeModel::syncNodeList(InternalNode &node, void *parent)
           void *obj = m_adapter->getItem(parent, destStart + i);
           auto newNode = new InternalNode(&node, obj, cur);
           // just add new node we shouldn't sync its children yet
-          nodes.emplace(nodes.begin() + cur, newNode);          
+          nodes.emplace(nodes.begin() + cur, newNode);
         }
         node.insertedChildren(srcCur + insertCount);
         endInsertRows();
@@ -184,13 +190,13 @@ QVariant VirtualTreeModel::data(const QModelIndex &index, int role) const
 QModelIndex VirtualTreeModel::index(int row, int column, const QModelIndex &parent) const
 {
   InternalNode &parentItem = getNode(parent);
-  if (row < parentItem.children.size())
+  if (row < static_cast<int>(parentItem.children.size()))
   {
     InternalNode *childItem = parentItem.children.at(row).get();
     return getIndex(*childItem, column);
   }
   else
-    return QModelIndex();  
+    return QModelIndex();
 }
 
 QModelIndex VirtualTreeModel::parent(const QModelIndex &index) const
@@ -200,7 +206,7 @@ QModelIndex VirtualTreeModel::parent(const QModelIndex &index) const
 
   InternalNode &childItem = getNode(index);
   InternalNode *parentItem = childItem.parent;
-  if (parentItem == nullptr || parentItem == m_root.get())
+  if (parentItem == nullptr || parentItem == m_root)
     return QModelIndex();
   return getIndex(*parentItem);
 }
@@ -208,13 +214,13 @@ QModelIndex VirtualTreeModel::parent(const QModelIndex &index) const
 int VirtualTreeModel::rowCount(const QModelIndex &parent) const
 {
   if (parent.isValid() && !this->parent(parent).isValid())
-      parent.internalId();
+    parent.internalId();
   InternalNode &parentItem = getNode(parent);
   if (m_syncing)
     return static_cast<int>(parentItem.children.size());
   else
     // lazy children loading
-    return parentItem.childCount(m_adapter);  
+    return parentItem.childCount(m_adapter);
 }
 
 int VirtualTreeModel::columnCount(const QModelIndex &parent) const
@@ -228,35 +234,35 @@ InternalNode & VirtualTreeModel::getNode(const QModelIndex &index) const
   if (index.isValid())
     return *(InternalNode*)index.internalPointer();
   else
-      return *m_root;
+    return *m_root;
 }
 
 InternalNode *VirtualTreeModel::getItemNode(void *item) const
 {
-    void * parentItem = m_adapter->getItemParent(item);
-    if (parentItem == item)
-        return nullptr;
-    if (parentItem == nullptr)
-        return m_root.get();
+  void * parentItem = m_adapter->getItemParent(item);
+  if (parentItem == item)
+    return nullptr;
+  if (parentItem == nullptr)
+    return m_root;
+  else
+  {
+    auto parentNode = getItemNode(parentItem);
+    int index = m_adapter->indexOf(parentItem, item);
+    if (index >= 0)
+    {
+      parentNode->loadChildren(m_adapter);
+      return parentNode->children[index].get();
+    }
     else
     {
-        auto parentNode = getItemNode(parentItem);
-        int index = m_adapter->indexOf(parentItem, item);
-        if (index >= 0)
-        {
-            parentNode->loadChildren(m_adapter);
-            return parentNode->children[index].get();
-        }
-        else
-        {
-            return nullptr;
-        }
+      return nullptr;
     }
+  }
 }
 
 QModelIndex VirtualTreeModel::getIndex(const InternalNode &node, int column) const
 {
-  if (&node == m_root.get())
+  if (&node == m_root)
     return QModelIndex();
   else
     return createIndex(static_cast<int>(node.parentIndex), column, quintptr(&node));
@@ -278,25 +284,25 @@ bool VirtualTreeModel::hasChildren(const QModelIndex &parent) const
   }
   else
   {
-      item.hasChildrenQueryed = true;
-      bool has = m_adapter->hasItems(item.item);
-      item.hasChildren = has;
-      return has;
+    item.hasChildrenQueryed = true;
+    bool has = m_adapter->hasItems(item.item);
+    item.hasChildren = has;
+    return has;
   }
 }
 
 void *VirtualTreeModel::getItem(const QModelIndex &index) const
 {
-    return getNode(index).item;
+  return getNode(index).item;
 }
 
 QModelIndex VirtualTreeModel::getItemIndex(void *item) const
 {
-    auto node = getItemNode(item);
-    if (node)
-      return getIndex(*node);
-    else
-      return QModelIndex();
+  auto node = getItemNode(item);
+  if (node)
+    return getIndex(*node);
+  else
+    return QModelIndex();
 }
 
 void VirtualTreeModel::beginUpdate()
@@ -305,7 +311,7 @@ void VirtualTreeModel::beginUpdate()
 }
 
 void VirtualTreeModel::endUpdate()
-{ 
+{
   if (m_updating == 1)
     syncTree();
   --m_updating;
@@ -316,11 +322,11 @@ void VirtualTreeModel::endUpdate()
 
 void VirtualTreeModel::QueuedUpdate()
 {
-    if (m_updating == 0)
-    {
-      beginUpdate();
-      QMetaObject::invokeMethod(this, "doQueuedUpdate", Qt::QueuedConnection);
-    }
+  if (m_updating == 0)
+  {
+    beginUpdate();
+    QMetaObject::invokeMethod(this, "doQueuedUpdate", Qt::QueuedConnection);
+  }
 }
 
 void VirtualTreeModel::syncTree()

@@ -14,8 +14,9 @@ class VirtualTreeModel : public QAbstractItemModel
   Q_OBJECT
 public:
   VirtualTreeModel(VirtualModelAdapter *adapter, QObject *parent = 0);
+  ~VirtualTreeModel();
 
-  QVariant data(const QModelIndex &index, int role) const override;  
+  QVariant data(const QModelIndex &index, int role) const override;
   QModelIndex index(int row, int column,
     const QModelIndex &parent = QModelIndex()) const override;
   QModelIndex parent(const QModelIndex &index) const override;
@@ -33,20 +34,20 @@ public:
 private:
 
   VirtualModelAdapter *m_adapter;
-  std::unique_ptr<VirtualModelInterfaceImpl> m_intf;
+  VirtualModelInterfaceImpl *m_intf;
   // we need mutable nodes to allow lazy loading
-  mutable std::unique_ptr<InternalNode> m_root;  
-  int m_updating = 0;
+  mutable InternalNode *m_root;
+  int m_updating;
 
   InternalNode & getNode(const QModelIndex &index) const;
   InternalNode *getItemNode(void *item) const;
   QModelIndex getIndex(const InternalNode &node, int column = 0) const;
 
   void syncNodeList(InternalNode &node, void *parent);
-  bool m_syncing = false;
+  bool m_syncing;
   void syncTree();
-  
-private slots:
+
+  private slots:
   void doQueuedUpdate();
 };
 

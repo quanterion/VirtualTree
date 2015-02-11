@@ -31,9 +31,10 @@ private:
 class VirtualModelInterface
 {
 public:
-    virtual void beginUpdate() = 0;
-    virtual void endUpdate() = 0;
-    virtual void QueuedUpdate() = 0;
+  virtual ~VirtualModelInterface();
+  virtual void beginUpdate() = 0;
+  virtual void endUpdate() = 0;
+  virtual void QueuedUpdate() = 0;  
 };
 
 #endif // VIRTUALMODELADAPTER_H

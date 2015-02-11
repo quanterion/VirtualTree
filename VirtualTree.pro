@@ -22,3 +22,5 @@ HEADERS  += mainwindow.h \
     virtualtreemodel/virtualtreeadapter.h
 
 FORMS    += mainwindow.ui
+
+CONFIG += c++14

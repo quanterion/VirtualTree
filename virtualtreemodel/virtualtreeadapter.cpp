@@ -11,12 +11,12 @@ int VirtualModelAdapter::indexOf(void *parent, void *item, int start)
 
 bool VirtualModelAdapter::hasItems(void *parent)
 {
-    return getItemsCount(parent) > 0;
+  return getItemsCount(parent) > 0;
 }
 
 void *VirtualModelAdapter::getItemParent(void *item)
 {
-    return item;
+  return item;
 }
 
 void VirtualModelAdapter::beginUpdate()
@@ -27,12 +27,18 @@ void VirtualModelAdapter::beginUpdate()
 
 void VirtualModelAdapter::endUpdate()
 {
-    if (m_modelIntf)
-        m_modelIntf->endUpdate();
+  if (m_modelIntf)
+    m_modelIntf->endUpdate();
 }
 
 void VirtualModelAdapter::QueuedUpdate()
 {
-    if (m_modelIntf)
-        m_modelIntf->QueuedUpdate();
+  if (m_modelIntf)
+    m_modelIntf->QueuedUpdate();
+}
+
+
+VirtualModelInterface::~VirtualModelInterface()
+{
+
 }
