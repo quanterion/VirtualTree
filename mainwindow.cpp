@@ -66,7 +66,7 @@ int VirtualPartAdapter::getItemsCount(void *parent)
   return static_cast<int>(getValue(parent)->subParts.size());
 }
 
-void MainWindow::on_actionAdd_group1_triggered()
+void MainWindow::on_actionAdd_group_triggered()
 {
   m_adapter->beginUpdate();
   Part* cur = currentPart();

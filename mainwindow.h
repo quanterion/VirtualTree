@@ -58,7 +58,7 @@ public:
   ~MainWindow();
 
   private slots:
-  void on_actionAdd_group1_triggered();
+  void on_actionAdd_group_triggered();
 
   void on_actionRemove_current_triggered();
 

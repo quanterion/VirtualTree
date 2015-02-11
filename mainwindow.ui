@@ -37,13 +37,13 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionAdd_group1"/>
+   <addaction name="actionAdd_group"/>
    <addaction name="actionRemove_current"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="actionAdd_group1">
+  <action name="actionAdd_group">
    <property name="text">
-    <string>Add group1</string>
+    <string>Add group</string>
    </property>
   </action>
   <action name="actionRemove_current">
