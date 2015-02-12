@@ -134,7 +134,7 @@ void VirtualTreeModel::syncNodeList(InternalNode &node, void *parent)
       // remove skipped source nodes
       if (srcCur > srcStart)
       {
-        beginRemoveRows(index, static_cast<int>(srcStart), static_cast<int>(srcCur)-1);
+        beginRemoveRows(index, srcStart, srcCur - 1);
         node.eraseChildren(nodes.begin() + srcStart, nodes.begin() + srcCur);
         if (!finishing)
           srcCur = srcStart;
@@ -148,7 +148,7 @@ void VirtualTreeModel::syncNodeList(InternalNode &node, void *parent)
       if (destCur > destStart)
       {
         int insertCount = destCur - destStart;
-        beginInsertRows(index, static_cast<int>(srcCur), static_cast<int>(srcCur + insertCount) - 1);
+        beginInsertRows(index, srcCur, srcCur + insertCount - 1);
         for (int i = 0, cur = srcCur; i < insertCount; i++, cur++)
         {
           void *obj = m_adapter->getItem(parent, destStart + i);
@@ -160,7 +160,7 @@ void VirtualTreeModel::syncNodeList(InternalNode &node, void *parent)
         endInsertRows();
 
         srcCur += insertCount;
-        destStart += static_cast<int>(insertCount);
+        destStart += insertCount;
       }
       destStart = destCur + 1;
 
