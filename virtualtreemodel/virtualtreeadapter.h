@@ -37,5 +37,12 @@ public:
   virtual void QueuedUpdate() = 0;  
 };
 
+class VirtualModelStubAdapter: public VirtualModelAdapter {
+public:
+  int getItemsCount(void *parent);
+  void * getItem(void *parent, int index);
+  QVariant data(void *item, int role);
+};
+
 #endif // VIRTUALMODELADAPTER_H
 

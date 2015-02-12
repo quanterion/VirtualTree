@@ -42,3 +42,24 @@ VirtualModelInterface::~VirtualModelInterface()
 {
 
 }
+
+
+int VirtualModelStubAdapter::getItemsCount(void *parent)
+{
+  Q_UNUSED(parent)
+  return 0;
+}
+
+void *VirtualModelStubAdapter::getItem(void *parent, int index)
+{
+  Q_UNUSED(parent)
+  Q_UNUSED(index)
+  return nullptr;
+}
+
+QVariant VirtualModelStubAdapter::data(void *item, int role)
+{
+  Q_UNUSED(item)
+  Q_UNUSED(role)
+  return QVariant();
+}

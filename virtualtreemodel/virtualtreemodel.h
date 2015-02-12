@@ -27,12 +27,15 @@ public:
   void * getItem(const QModelIndex &index) const;
   QModelIndex getItemIndex(void *item) const;
 
+  VirtualModelAdapter * setModelAdapter(VirtualModelAdapter *adapter);
+  VirtualModelAdapter * getModelAdapter() const;
+
   void beginUpdate();
   void endUpdate();
   // tree is updating that means items in internal nodes may be invalid
-  bool isUpdating();
+  bool isUpdating() const;
   // internal nodes are being synchronized with adapter
-  bool isSyncing();
+  bool isSyncing() const;
 
   void QueuedUpdate();
 
