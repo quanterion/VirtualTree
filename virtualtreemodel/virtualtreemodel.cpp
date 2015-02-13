@@ -350,12 +350,7 @@ void VirtualTreeModel::endUpdate()
 
 bool VirtualTreeModel::isUpdating() const
 {
-  return m_updating > 0;
-}
-
-bool VirtualTreeModel::isSyncing() const
-{
-  return m_syncing;
+  return m_updating > 0 || m_syncing;
 }
 
 void VirtualTreeModel::QueuedUpdate()

@@ -33,9 +33,7 @@ public:
   void beginUpdate();
   void endUpdate();
   // tree is updating that means items in internal nodes may be invalid
-  bool isUpdating() const;
-  // internal nodes are being synchronized with adapter
-  bool isSyncing() const;
+  bool isUpdating() const;  
 
   void QueuedUpdate();
 
