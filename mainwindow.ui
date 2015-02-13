@@ -39,6 +39,9 @@
    </attribute>
    <addaction name="actionAdd_group"/>
    <addaction name="actionRemove_current"/>
+   <addaction name="separator"/>
+   <addaction name="actionRemove_adapter"/>
+   <addaction name="actionAssign_adapter"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionAdd_group">
@@ -49,6 +52,16 @@
   <action name="actionRemove_current">
    <property name="text">
     <string>Remove current</string>
+   </property>
+  </action>
+  <action name="actionRemove_adapter">
+   <property name="text">
+    <string>Remove adapter</string>
+   </property>
+  </action>
+  <action name="actionAssign_adapter">
+   <property name="text">
+    <string>Assign adapter</string>
    </property>
   </action>
  </widget>

@@ -95,3 +95,18 @@ Part *MainWindow::currentPart()
 {
   return m_adapter->getValue(m_treeModel->getItem(ui->treeView->currentIndex()));
 }
+
+void MainWindow::on_actionRemove_model_triggered()
+{
+    m_treeModel->setModelAdapter(nullptr);
+}
+
+void MainWindow::on_actionAssign_adapter_triggered()
+{
+    m_treeModel->setModelAdapter(m_adapter.get());
+}
+
+void MainWindow::on_actionRemove_adapter_triggered()
+{
+    m_treeModel->setModelAdapter(nullptr);
+}

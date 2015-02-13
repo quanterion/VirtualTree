@@ -189,7 +189,7 @@ QVariant VirtualTreeModel::data(const QModelIndex &index, int role) const
 }
 
 QModelIndex VirtualTreeModel::index(int row, int column, const QModelIndex &parent) const
-{
+{  
   InternalNode &parentItem = getNode(parent);
   if (row < static_cast<int>(parentItem.children.size()))
   {
@@ -202,7 +202,7 @@ QModelIndex VirtualTreeModel::index(int row, int column, const QModelIndex &pare
 
 QModelIndex VirtualTreeModel::parent(const QModelIndex &index) const
 {
-  if (!index.isValid())
+  if (!index.isValid() || !m_adapter)
     return QModelIndex();
 
   InternalNode &childItem = getNode(index);
@@ -319,7 +319,10 @@ VirtualModelAdapter * VirtualTreeModel::setModelAdapter(VirtualModelAdapter *ada
   if (m_adapter)
     m_adapter->setModel(nullptr);
   m_adapter = adapter;
-  if (m_adapter)
+  beginResetModel();
+  m_root->children.clear();
+  endResetModel();
+  if (m_adapter)  
     m_adapter->setModel(m_intf);
   endUpdate();
   return oldAdapter;

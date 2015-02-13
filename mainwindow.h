@@ -62,6 +62,12 @@ public:
 
   void on_actionRemove_current_triggered();
 
+  void on_actionRemove_model_triggered();
+
+  void on_actionAssign_adapter_triggered();
+
+  void on_actionRemove_adapter_triggered();
+
 private:
   Ui::MainWindow *ui;
   Part root;
